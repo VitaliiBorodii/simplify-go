@@ -66,7 +66,7 @@ func simplifyRadialDist(points []Point, sqTolerance float64) []Point {
 		}
 	}
 
-	if prevPoint != point {
+	if &prevPoint != &point {
 		newPoints = append(newPoints, point)
 	}
 
