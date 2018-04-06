@@ -18,7 +18,7 @@ func (p ChartPoint) GetY() float64 {
 	return p.Y
 }
 
-func getSqDist(p1 ChartPoint, p2 ChartPoint) float64 {
+func getSqDist(p1 Point, p2 Point) float64 {
 
 	dx := p1.GetX() - p2.GetX()
 	dy := p1.GetY() - p2.GetY()
@@ -26,7 +26,7 @@ func getSqDist(p1 ChartPoint, p2 ChartPoint) float64 {
 	return dx*dx + dy*dy
 }
 
-func getSqSegDist(p ChartPoint, p1 ChartPoint, p2 ChartPoint) float64 {
+func getSqSegDist(p Point, p1 Point, p2 Point) float64 {
 
 	x := p1.GetX()
 	y := p1.GetY()
@@ -51,11 +51,11 @@ func getSqSegDist(p ChartPoint, p1 ChartPoint, p2 ChartPoint) float64 {
 	return dx*dx + dy*dy
 }
 
-func simplifyRadialDist(points []ChartPoint, sqTolerance float64) []ChartPoint {
+func simplifyRadialDist(points []Point, sqTolerance float64) []Point {
 
 	prevPoint := points[0]
-	newPoints := []ChartPoint{prevPoint}
-	var point ChartPoint
+	newPoints := []Point{prevPoint}
+	var point Point
 
 	for i := 1; i < len(points); i++ {
 		point = points[i]
@@ -73,7 +73,7 @@ func simplifyRadialDist(points []ChartPoint, sqTolerance float64) []ChartPoint {
 	return newPoints
 }
 
-func simplifyDPStep(points []ChartPoint, first int, last int, sqTolerance float64, simplified []ChartPoint) []ChartPoint {
+func simplifyDPStep(points []Point, first int, last int, sqTolerance float64, simplified []Point) []Point {
 	maxSqDist := sqTolerance
 	var index int
 
@@ -99,17 +99,17 @@ func simplifyDPStep(points []ChartPoint, first int, last int, sqTolerance float6
 	return simplified
 }
 
-func simplifyDouglasPeucker(points []ChartPoint, sqTolerance float64) []ChartPoint {
+func simplifyDouglasPeucker(points []Point, sqTolerance float64) []Point {
 	last := len(points) - 1
 
-	simplified := []ChartPoint{points[0]}
+	simplified := []Point{points[0]}
 	simplified = simplifyDPStep(points, 0, last, sqTolerance, simplified)
 	simplified = append(simplified, points[last])
 
 	return simplified
 }
 
-func Simplify(points []ChartPoint, tolerance float64, highestQuality bool) []ChartPoint {
+func Simplify(points []Point, tolerance float64, highestQuality bool) []Point {
 
 	if len(points) <= 2 {
 		return points
