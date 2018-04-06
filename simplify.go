@@ -6,47 +6,47 @@ type ChartPoint struct {
 }
 
 type Point interface {
-	getX() float64
-	getY() float64
+	GetX() float64
+	GetY() float64
 }
 
-func (p ChartPoint) getX() float64 {
+func (p ChartPoint) GetX() float64 {
 	return p.X
 }
 
-func (p ChartPoint) getY() float64 {
+func (p ChartPoint) GetY() float64 {
 	return p.Y
 }
 
 func getSqDist(p1 ChartPoint, p2 ChartPoint) float64 {
 
-	dx := p1.getX() - p2.getX()
-	dy := p1.getY() - p2.getY()
+	dx := p1.GetX() - p2.GetX()
+	dy := p1.GetY() - p2.GetY()
 
 	return dx*dx + dy*dy
 }
 
 func getSqSegDist(p ChartPoint, p1 ChartPoint, p2 ChartPoint) float64 {
 
-	x := p1.getX()
-	y := p1.getY()
-	dx := p2.getX() - x
-	dy := p2.getY() - y
+	x := p1.GetX()
+	y := p1.GetY()
+	dx := p2.GetX() - x
+	dy := p2.GetY() - y
 
 	if dx != 0 || dy != 0 {
-		t := ((p.getX()-x)*dx + (p.getY()-y)*dy) / (dx*dx + dy*dy)
+		t := ((p.GetX()-x)*dx + (p.GetY()-y)*dy) / (dx*dx + dy*dy)
 
 		if t > 1 {
-			x = p2.getX()
-			y = p2.getY()
+			x = p2.GetX()
+			y = p2.GetY()
 		} else if t > 0 {
 			x += dx * t
 			y += dy * t
 		}
 	}
 
-	dx = p.getX() - x
-	dy = p.getY() - y
+	dx = p.GetX() - x
+	dy = p.GetY() - y
 
 	return dx*dx + dy*dy
 }
