@@ -109,10 +109,11 @@ func simplifyDouglasPeucker(points []Point, sqTolerance float64) []Point {
 	return simplified
 }
 
-func Simplify(points []Point, tolerance float64, highestQuality bool) []Point {
+func Simplify(points *[]Point, tolerance float64, highestQuality bool) []Point {
+	arr := *points
 
-	if len(points) <= 2 {
-		return points
+	if len(arr) <= 2 {
+		return arr
 	}
 
 	var sqTolerance float64
@@ -123,10 +124,10 @@ func Simplify(points []Point, tolerance float64, highestQuality bool) []Point {
 	}
 
 	if !highestQuality {
-		points = simplifyRadialDist(points, sqTolerance)
+		arr = simplifyRadialDist(arr, sqTolerance)
 	}
 
-	points = simplifyDouglasPeucker(points, sqTolerance)
+	arr = simplifyDouglasPeucker(arr, sqTolerance)
 
-	return points
+	return arr
 }
