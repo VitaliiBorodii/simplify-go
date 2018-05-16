@@ -1,5 +1,7 @@
 package simplifyGo
 
+import "fmt"
+
 type ChartPoint struct {
 	X float64
 	Y float64
@@ -128,6 +130,8 @@ func Simplify(points *[]Point, tolerance float64, highestQuality bool) []Point {
 	}
 
 	arr = simplifyDouglasPeucker(arr, sqTolerance)
+	
+	fmt.Println("Simplify:", len(points), "=>", len(arr))
 
 	return arr
 }
