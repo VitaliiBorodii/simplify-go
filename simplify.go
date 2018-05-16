@@ -1,15 +1,8 @@
 package simplifyGo
 
-import "fmt"
-
 type ChartPoint struct {
 	X float64
 	Y float64
-}
-
-type Point interface {
-	GetX() float64
-	GetY() float64
 }
 
 func (p ChartPoint) GetX() float64 {
@@ -20,6 +13,11 @@ func (p ChartPoint) GetY() float64 {
 	return p.Y
 }
 
+type Point interface {
+	GetX() float64
+	GetY() float64
+}
+
 func getSqDist(p1 Point, p2 Point) float64 {
 
 	dx := p1.GetX() - p2.GetX()
@@ -28,7 +26,10 @@ func getSqDist(p1 Point, p2 Point) float64 {
 	return dx*dx + dy*dy
 }
 
-func getSqSegDist(p Point, p1 Point, p2 Point) float64 {
+func getSqSegDist(point *Point, point1 *Point, point2 *Point) float64 {
+	p := *point
+	p1 := *point1
+	p2 := *point2
 
 	x := p1.GetX()
 	y := p1.GetY()
@@ -53,14 +54,15 @@ func getSqSegDist(p Point, p1 Point, p2 Point) float64 {
 	return dx*dx + dy*dy
 }
 
-func simplifyRadialDist(points []Point, sqTolerance float64) []Point {
+func simplifyRadialDist(points *[]Point, sqTolerance float64) *[]Point {
+	arr := *points
 
-	prevPoint := points[0]
+	prevPoint := arr[0]
 	newPoints := []Point{prevPoint}
 	var point Point
 
-	for i := 1; i < len(points); i++ {
-		point = points[i]
+	for i := 1; i < len(arr); i++ {
+		point = arr[i]
 
 		if getSqDist(point, prevPoint) > sqTolerance {
 			newPoints = append(newPoints, point)
@@ -72,15 +74,17 @@ func simplifyRadialDist(points []Point, sqTolerance float64) []Point {
 		newPoints = append(newPoints, point)
 	}
 
-	return newPoints
+	return &newPoints
 }
 
-func simplifyDPStep(points []Point, first int, last int, sqTolerance float64, simplified []Point) []Point {
+func simplifyDPStep(points *[]Point, first int, last int, sqTolerance float64, simplified *[]Point) {
+	arr := *points
 	maxSqDist := sqTolerance
 	var index int
+	simpifiedVal := *simplified
 
 	for i := first + 1; i < last; i++ {
-		sqDist := getSqSegDist(points[i], points[first], points[last])
+		sqDist := getSqSegDist(&arr[i], &arr[first], &arr[last])
 
 		if sqDist > maxSqDist {
 			index = i
@@ -90,32 +94,30 @@ func simplifyDPStep(points []Point, first int, last int, sqTolerance float64, si
 
 	if maxSqDist > sqTolerance {
 		if index-first > 1 {
-			simplified = simplifyDPStep(points, first, index, sqTolerance, simplified)
+			simplifyDPStep(points, first, index, sqTolerance, simplified)
 		}
-		simplified = append(simplified, points[index])
+		simpifiedVal = append(simpifiedVal, arr[index])
 		if last-index > 1 {
-			simplified = simplifyDPStep(points, index, last, sqTolerance, simplified)
+			simplifyDPStep(points, index, last, sqTolerance, simplified)
 		}
 	}
-
-	return simplified
 }
 
-func simplifyDouglasPeucker(points []Point, sqTolerance float64) []Point {
-	last := len(points) - 1
-
-	simplified := []Point{points[0]}
-	simplified = simplifyDPStep(points, 0, last, sqTolerance, simplified)
-	simplified = append(simplified, points[last])
-
-	return simplified
-}
-
-func Simplify(points *[]Point, tolerance float64, highestQuality bool) []Point {
+func simplifyDouglasPeucker(points *[]Point, sqTolerance float64) *[]Point {
 	arr := *points
+	last := len(arr) - 1
 
-	if len(arr) <= 2 {
-		return arr
+	simplifiedVal := []Point{arr[0]}
+	simplified := &simplifiedVal
+	simplifyDPStep(points, 0, last, sqTolerance, simplified)
+	simplifiedVal = append(simplifiedVal, arr[last])
+
+	return simplified
+}
+
+func Simplify(points *[]Point, tolerance float64, highestQuality bool) *[]Point {
+	if len(*points) <= 2 {
+		return points
 	}
 
 	var sqTolerance float64
@@ -126,12 +128,10 @@ func Simplify(points *[]Point, tolerance float64, highestQuality bool) []Point {
 	}
 
 	if !highestQuality {
-		arr = simplifyRadialDist(arr, sqTolerance)
+		points = simplifyRadialDist(points, sqTolerance)
 	}
 
-	arr = simplifyDouglasPeucker(arr, sqTolerance)
-	
-	fmt.Println("Simplify:", len(points), "=>", len(arr))
+	points = simplifyDouglasPeucker(points, sqTolerance)
 
-	return arr
+	return points
 }
